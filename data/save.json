@@ -1,0 +1,20 @@
+{
+  "resources": 0.0,
+  "upgrade_levels": {
+    "pick_power": 0,
+    "auto_harvest": 0,
+    "ore_magnet": 0,
+    "warp_field": 0,
+    "crystal_echo": 0,
+    "temporal_surge": 0
+  },
+  "upgrade_costs": {
+    "pick_power": 15,
+    "auto_harvest": 40,
+    "ore_magnet": 80,
+    "warp_field": 120,
+    "crystal_echo": 200,
+    "temporal_surge": 350
+  },
+  "wave": 3
+}

@@ -1,5 +1,5 @@
 {
-  "resources": 0.0,
+  "resources": 14.0,
   "upgrade_levels": {
     "pick_power": 0,
     "auto_harvest": 0,
@@ -16,5 +16,5 @@
     "crystal_echo": 200,
     "temporal_surge": 350
   },
-  "wave": 3
+  "wave": 6
 }

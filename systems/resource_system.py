@@ -170,6 +170,38 @@ class ResourceSystem:
     def auto_collect(self, dt, player, auto_income):
         """Passive income tick."""
         return auto_income * dt
+    
+    def vacuum_collect(self, player, particles, floating_texts, font_sm, click_power):
+        """ Aether lens: suck up ores near player while they are moving."""
+        if player.vacuum_radius <= 0:
+            return 0 
+        speed = math.hypot(player.vx, player.vy)
+        if speed < 30: # only while actually moving 
+            return 0
+        gained = 0
+        to_remove = []
+        for ore in self.ores:
+            if not ore.alive:
+                continue 
+            d = dist(ore.x, ore.y, player.x, player.y)
+            if d < player.vaccum_radius:
+                to_remove.append(ore)
+        for ore in to_remove:
+            ore.alive = False 
+            val = ore.value * click_power 
+            gained += val 
+            particles.burst(ore.x, ore.y, ore.color, count=8,
+                            speed=80, life=0.5, size=4, glow=True)
+
+            floating_texts.add(ore.x, ore.y - 20,
+                               f"+{val}", font_sm, ore.glow)
+        
+        self.ores = [o for o in self.ores if o.alive]
+        while len(self.ores) < self.total_ores:
+            self._spawn_ore(player.x, player.y)
+        return gained 
+    
+            
 
     def draw(self, surf, cam):
         for ore in self.ores:

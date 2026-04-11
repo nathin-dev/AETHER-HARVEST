@@ -1,0 +1,116 @@
+"""
+
+Game modes for Aether Harvest 
+Each mode changes rules, difficulty, and rewards.
+"""
+
+MODES = {
+    "classic": {
+        "name": "Classic",
+        "subtitle": "The Original Experience",
+        "icon": "◈",
+        "color": (120, 60, 255),
+        "description": "Survive waves, harvest crystals, upgrade your arsenal.",
+        "unlocked": True,
+        "wave_internal": 18.0,
+        "enemy_scale": 1.0,
+        "ore_value_mult": 1.0,
+        "lives": 1,
+        "time_limit": 0, # 0 = no limit
+        "modifiers": [],
+    },
+    "blitz": {
+        "name": "Blitz",
+        "subtitle": "Speed run- 5 minutes",
+        "icon": "⚡",
+        "color": (255, 180, 50),
+        "description": "Harvest as much as possible before time runs out. Enemies are faster, ores worth more.",
+        "unlocked": True,
+        "wave_interval": 10.0,
+        "enemy_scale": 1.4,
+        "ore_value_mult": 2.0,
+        "lives": 3,
+        "time_limit": 300, # 5 minutes 
+        "modifiers": ["fast_enemies", "double_ore"],
+    },
+    "void_seige": {
+        "name": "Void Siege",
+        "subtitle": "Endless darkness",
+        "icon": "☠",
+        "color": (255, 70, 90),
+        "description": "No Upgrades. Raw skill only. Every wave scales brutally.",
+        "unlocked": True,
+        "wave_interval": 12.0,
+        "enemy_scale": 1.8,
+        "ore_value_mult": 4.0,
+        "lives": 1,
+        "time_limit": 0,
+        "modifiers": ["no_upgrades", "brutual_scaling"],
+
+    },
+    "crystal_rush": {
+        "name": "Crystal Rush",
+        "subtitle": "Click frenzy",
+        "icon": "💎",
+        "color": (60, 220, 200),
+        "description": "No enemies. Pure Harvesting. beat Your high score.",
+        "unlocked": True,
+        "wave_interval": 9999,
+        "enemy_scale": 0.0,
+        "ore_value_mult": 1.5,
+        "lives": 1,
+        "time_limit": 120, # 2 minutes 
+        "modifiers": ["no_enemies", "ore_frenzy"],
+
+    },
+    "prestige": {
+        "name": "Prestige",
+        "subtitle": "Unlocked after wave 20",
+        "icon": "*",
+        "color": (255, 220, 50),
+        "description": "all upgrades maxed from the start. Face endless og-tier enemies",
+        "unlocked": False,
+        "wave_interval": 8.0,
+        "enemy_scale": 3.0,
+        "ore_value_mult": 6.0,
+        "lives": 1,
+        "time_limit": 0,
+        "modifiers": ["all_maxed", "god_enemies"],
+    },
+}
+
+DIFFICULTIES = {
+    "easy": {
+        "name": "Easy",
+        "color": (80, 255, 140),
+        "icon": "☆",
+        "enemy_hp": 0.6,
+        "enemy_dmg": 0.5,
+        "enemy_speed": 0.8,
+        "ore_mult": 0.8,
+        "xp_mult": 0.7,
+        "description": "Chill vibes. Learn the game.",
+    },
+    "normal": {
+        "name": "Normal",
+        "color": (120, 60, 255),
+        "icon": "✦",
+        "enemy_hp": 1.0,
+        "enemy_dmg": 1.0,
+        "enemy_speed": 1.0,
+        "ore_mult": 1.0,
+        "xp_mult": 1.0,
+        "description": "The intended experience",
+    },
+    "hard": {
+        "name": "Hard",
+        "color": (255, 180, 50),
+        "icon": "✦✦",
+        "enemy_hp": 1.6,
+        "enemy_dmg": 1.5,
+        "enemy_speed": 1.3,
+        "ore_mult": 1.8,
+        "xp_mult": 2.5,
+        "description": "You will die , probably several times.",
+    }
+}

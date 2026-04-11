@@ -9,7 +9,7 @@ import json, os, time
 SCORES_FILE = "data/scores.json"
 MAX_SCORES = 10
 
-class HighScoresSystem:
+class HighScoreSystem:
     def __init__(self):
         self.scores = {} # mode -> list of {score, wave, time, date, difficulty}
         self._load()

@@ -43,7 +43,7 @@ ACHIEVEMENTS = [
     {"id":"no_damage",     "name":"Untouchable",      "desc":"Survive wave 3 without taking damage","icon":"✨","color":(255,255,100),"condition":("nodmg_wave3",1)},
 ]
 
-class AchievementsSystem:
+class AchievementSystem:
     def __init__(self):
         self.unlocked  = set()
         self.stats = {

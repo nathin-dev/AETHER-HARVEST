@@ -1,30 +1,38 @@
 {
-  "resources": 118.24999999999807,
+  "resources": 0.0,
   "upgrade_levels": {
     "pick_power": 0,
-    "auto_harvest": 1,
+    "auto_harvest": 0,
     "ore_magnet": 0,
     "warp_field": 0,
     "crystal_echo": 0,
-    "temporal_surge": 0
+    "temporal_surge": 0,
+    "aether_bolt": 0,
+    "void_shield": 0,
+    "phase_drive": 0,
+    "aether_lens": 0
   },
   "upgrade_costs": {
     "pick_power": 15,
-    "auto_harvest": 72,
+    "auto_harvest": 40,
     "ore_magnet": 80,
     "warp_field": 120,
     "crystal_echo": 200,
-    "temporal_surge": 350
+    "temporal_surge": 350,
+    "aether_bolt": 50,
+    "void_shield": 60,
+    "phase_drive": 90,
+    "aether_lens": 180
   },
-  "wave": 4,
+  "wave": 0,
   "mode_id": "classic",
   "difficulty_id": "easy",
   "xp": {
-    "xp": 47,
+    "xp": 0,
     "level": 1,
     "xp_to_next": 226,
-    "total_xp": 47,
-    "kills": 8,
+    "total_xp": 0,
+    "kills": 0,
     "bonus_click": 0,
     "bonus_hp": 0,
     "bonus_range": 0,

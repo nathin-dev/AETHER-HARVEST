@@ -11,7 +11,7 @@ from core.game_modes import MODES, DIFFICULTIES
 from core.achievements import ACHIEVEMENTS
 
 
-# ── Reusable star field ───────────────────────────────────────────────────────
+
 class StarField:
     def __init__(self, n=200):
         self.stars = [(random.uniform(0,WIDTH), random.uniform(0,HEIGHT),
@@ -31,7 +31,7 @@ class StarField:
             pygame.draw.circle(surf, (b, b, min(255,b+40)), (int(x),int(y)), r)
 
 
-# ── Generic button ────────────────────────────────────────────────────────────
+
 class Button:
     def __init__(self, rect, text, font, color=C_PRIMARY, hover_color=C_SECONDARY):
         self.rect        = pygame.Rect(rect)
@@ -63,7 +63,7 @@ class Button:
                         r.centery - txt.get_height()//2))
 
 
-# ── Main menu (screen 1) ──────────────────────────────────────────────────────
+
 class MainMenu:
     def __init__(self, font_lg, font_md, font_sm, font_xs,
                  has_save=False, achievements=None, highscores=None, prestige=None):
@@ -75,34 +75,36 @@ class MainMenu:
         self.to_achievements= False
 
         cx = WIDTH // 2
+        y0 = 290
+        gap = 58
         self.btns = [
-            Button((cx-130, 310, 260, 52), "PLAY",          font_md, C_SECONDARY),
-            Button((cx-130, 374, 260, 52), "CONTINUE",      font_md, C_PRIMARY) if has_save
-             else Button((cx-130, 374, 260, 52), "HOW TO PLAY", font_md, C_GRAY),
-            Button((cx-130, 438, 260, 52), "ACHIEVEMENTS",  font_md, C_ACCENT),
-            Button((cx-130, 502, 260, 52), "QUIT",          font_md, C_DANGER),
+            Button((cx-130, y0+0*gap, 260, 50), "PLAY",         font_md, C_SECONDARY),
+            Button((cx-130, y0+1*gap, 260, 50), "CONTINUE",     font_md, C_PRIMARY) if has_save
+             else Button((cx-130, y0+1*gap, 260, 50), "NEW GAME", font_md, C_PRIMARY),
+            Button((cx-130, y0+2*gap, 260, 50), "HOW TO PLAY",  font_md, C_ACCENT),
+            Button((cx-130, y0+3*gap, 260, 50), "ACHIEVEMENTS", font_md, (180,120,255)),
+            Button((cx-130, y0+4*gap, 260, 50), "QUIT",         font_md, C_DANGER),
         ]
-        self.has_save    = has_save
-        self.new_game    = False
-        self.achievements= achievements
-        self.prestige    = prestige
-        self.highscores  = highscores
+        self.has_save      = has_save
+        self.new_game      = False
+        self.achievements  = achievements
+        self.prestige      = prestige
+        self.highscores    = highscores
+        self.to_howtoplay  = False
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mp = pygame.mouse.get_pos()
             if self.btns[0].clicked(mp):
-                self.to_mode_select = True
-                self.done = True
-                self.new_game = True
+                self.to_mode_select = True; self.done=True; self.new_game=True
             elif self.btns[1].clicked(mp):
-                self.to_mode_select = True
-                self.done = True
+                self.to_mode_select = True; self.done=True
                 self.new_game = not self.has_save
             elif self.btns[2].clicked(mp):
-                self.to_achievements = True
-                self.done = True
+                self.to_howtoplay = True; self.done=True
             elif self.btns[3].clicked(mp):
+                self.to_achievements = True; self.done=True
+            elif self.btns[4].clicked(mp):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def update(self, dt):
@@ -118,7 +120,7 @@ class MainMenu:
         font_lg, font_md, font_sm, font_xs = self.fonts
         cx = WIDTH // 2
 
-        # Orbiting hex ring
+        
         for i in range(16):
             a  = self.t * 0.3 + i * math.tau / 16
             rx = cx + int(math.cos(a) * 160)
@@ -126,7 +128,7 @@ class MainMenu:
             col = C_PRIMARY if i%4 != 0 else C_SECONDARY
             pygame.draw.circle(surf, col, (rx, ry), 2 + (i%3))
 
-        # Title glow
+       
         title_y = 145 + int(math.sin(self.t*1.2)*6)
         title   = font_lg.render("AETHER  HARVEST", True, C_ACCENT)
         surf.blit(title, (cx - title.get_width()//2, title_y))
@@ -134,7 +136,7 @@ class MainMenu:
         sub = font_sm.render("Crystal Mining  ·  Wave Defense  ·  Prestige Upgrades", True, C_GRAY)
         surf.blit(sub, (cx - sub.get_width()//2, title_y + 44))
 
-        # Prestige badge
+        
         if self.prestige and self.prestige.prestige_level > 0:
             p_txt = font_xs.render(f"★ Prestige {self.prestige.prestige_level}", True, (255,220,50))
             surf.blit(p_txt, (cx - p_txt.get_width()//2, title_y + 66))
@@ -142,14 +144,13 @@ class MainMenu:
         for b in self.btns:
             b.draw(surf)
 
-        # Achievement progress bottom-left
-        if self.achievements:
+        
             ach_txt = font_xs.render(
                 f"Achievements  {self.achievements.total_unlocked}/{self.achievements.total_count}",
                 True, C_GRAY)
             surf.blit(ach_txt, (16, HEIGHT - 22))
 
-        # High score blurb
+        
         if self.highscores:
             best = self.highscores.get_best("classic")
             if best:
@@ -162,7 +163,6 @@ class MainMenu:
         surf.blit(ver, (WIDTH-44, HEIGHT-20))
 
 
-# ── Mode select (screen 2) ────────────────────────────────────────────────────
 class ModeSelectScreen:
     CARD_W, CARD_H = 240, 200
     COLS, ROWS     = 3, 2
@@ -179,7 +179,7 @@ class ModeSelectScreen:
         self.highscores = highscores
         self.hover_mode = None
 
-        # Unlock prestige mode
+        
         if prestige and prestige.total_prestiges > 0:
             MODES["prestige"]["unlocked"] = True
 
@@ -232,7 +232,7 @@ class ModeSelectScreen:
             hovered = self.hover_mode == mode_id
             col     = m["color"] if not locked else (50,40,70)
 
-            # Card bg
+           
             pulse = abs(math.sin(self.t*2)) * 0.3 if hovered and not locked else 0
             draw_panel(surf, rect,
                        color=(25+int(pulse*20),16+int(pulse*10),55+int(pulse*30)),
@@ -240,21 +240,21 @@ class ModeSelectScreen:
             if hovered and not locked:
                 draw_glow_rect(surf, col, rect, radius=8, alpha=50)
 
-            # Icon
+           
             icon_s = font_lg.render(m["icon"], True, col)
             surf.blit(icon_s, (rect.centerx - icon_s.get_width()//2, rect.y+16))
 
-            # Name
+           
             name_s = font_md.render(m["name"], True,
                                     col if not locked else (70,60,90))
             surf.blit(name_s, (rect.centerx - name_s.get_width()//2, rect.y+62))
 
-            # Subtitle
+           
             sub_s = font_xs.render(m["subtitle"] if not locked else "— LOCKED —",
                                    True, (120,110,150) if locked else C_GRAY)
             surf.blit(sub_s, (rect.centerx - sub_s.get_width()//2, rect.y+90))
 
-            # Description (wrap manually)
+           
             if not locked:
                 desc = m["description"]
                 words = desc.split()
@@ -273,7 +273,7 @@ class ModeSelectScreen:
                     surf.blit(ls, (rect.centerx - ls.get_width()//2,
                                    rect.y + 112 + li*16))
 
-            # Best score badge
+            
             if self.highscores and not locked:
                 best = self.highscores.get_best(mode_id)
                 if best:
@@ -281,7 +281,7 @@ class ModeSelectScreen:
                                         True, C_ACCENT)
                     surf.blit(bs, (rect.x + 8, rect.bottom - 18))
 
-            # Time limit tag
+           
             if m["time_limit"] > 0 and not locked:
                 mins = m["time_limit"]//60
                 tl = font_xs.render(f"⏱ {mins}min", True, C_ACCENT)
@@ -291,7 +291,7 @@ class ModeSelectScreen:
         surf.blit(esc, (16, HEIGHT-20))
 
 
-# ── Difficulty select (screen 3) ──────────────────────────────────────────────
+
 class DifficultyScreen:
     BTN_W, BTN_H = 280, 80
 
@@ -358,15 +358,15 @@ class DifficultyScreen:
             if hovered:
                 draw_glow_rect(surf, col, rect, radius=6, alpha=50)
 
-            # Icon + name
+            
             icon_s = font_md.render(d["icon"]+"  "+d["name"], True, col)
             surf.blit(icon_s, (rect.x + 20, rect.y + 14))
 
-            # Description
+           
             desc_s = font_xs.render(d["description"], True, C_GRAY)
             surf.blit(desc_s, (rect.x + 20, rect.y + 42))
 
-            # Multiplier tags right side
+          
             tags = [
                 f"Enemies ×{d['enemy_hp']:.1f}HP",
                 f"XP ×{d['xp_mult']:.1f}",
@@ -380,7 +380,6 @@ class DifficultyScreen:
         surf.blit(esc, (16, HEIGHT-20))
 
 
-# ── Achievements screen ───────────────────────────────────────────────────────
 class AchievementsScreen:
     def __init__(self, font_lg, font_md, font_sm, font_xs, achievements):
         self.fonts = (font_lg, font_md, font_sm, font_xs)
@@ -413,7 +412,7 @@ class AchievementsScreen:
             True, C_GRAY)
         surf.blit(prog, (WIDTH//2 - prog.get_width()//2, 72))
 
-        # Grid layout
+       
         COLS   = 3
         CELL_W = (WIDTH - 80) // COLS
         CELL_H = 72
@@ -460,7 +459,7 @@ class AchievementsScreen:
         surf.blit(esc, (WIDTH//2 - esc.get_width()//2, HEIGHT-20))
 
 
-# ── Game over screen ──────────────────────────────────────────────────────────
+
 class GameOverScreen:
     def __init__(self, font_lg, font_md, font_sm, font_xs,
                  resources, wave, play_time,
@@ -523,7 +522,7 @@ class GameOverScreen:
         title = font_lg.render("YOU HAVE FALLEN", True, C_DANGER)
         surf.blit(title, (cx - title.get_width()//2, panel.y+24))
 
-        # Mode / difficulty tag
+      
         m = MODES.get(self.mode_id, MODES["classic"])
         d = DIFFICULTIES.get(self.difficulty_id, DIFFICULTIES["normal"])
         tag = font_xs.render(f"{m['name']}  ·  {d['name']}", True, C_GRAY)
@@ -548,7 +547,7 @@ class GameOverScreen:
             pygame.draw.line(surf, (40,30,70),
                              (panel.x+30,y+34),(panel.right-30,y+34), 1)
 
-        # Rank / record badge
+        
         if self.is_new_record:
             rec = font_sm.render("★ NEW RECORD!", True, (255,220,50))
             surf.blit(rec, (cx - rec.get_width()//2, panel.y+260))

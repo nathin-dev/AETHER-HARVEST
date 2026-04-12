@@ -15,7 +15,7 @@ MODES = {
         "enemy_scale":   1.0,
         "ore_value_mult":1.0,
         "lives":         1,
-        "time_limit":    0,      # 0 = no limit
+        "time_limit":    0,      
         "modifiers":     [],
     },
     "blitz": {
@@ -29,7 +29,7 @@ MODES = {
         "enemy_scale":   1.4,
         "ore_value_mult":2.0,
         "lives":         3,
-        "time_limit":    300,    # 5 minutes
+        "time_limit":    300,   
         "modifiers":     ["fast_enemies", "double_ore"],
     },
     "void_siege": {
@@ -57,7 +57,7 @@ MODES = {
         "enemy_scale":   0.0,
         "ore_value_mult":1.5,
         "lives":         1,
-        "time_limit":    120,    # 2 minutes
+        "time_limit":    120,   
         "modifiers":     ["no_enemies", "ore_frenzy"],
     },
     "prestige": {
@@ -66,7 +66,7 @@ MODES = {
         "icon":        "★",
         "color":       (255, 220, 50),
         "description": "All upgrades maxed from the start. Face endless god-tier enemies.",
-        "unlocked":    False,    # unlocked by reaching wave 20
+        "unlocked":    False,   
         "wave_interval": 8.0,
         "enemy_scale":   3.0,
         "ore_value_mult":6.0,

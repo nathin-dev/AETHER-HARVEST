@@ -53,4 +53,3 @@ def load_game(upgrades):
         return resources, wave, mode_id, difficulty_id, xp_data
     except Exception:
         return 0, 0, "classic", "normal", None
-

@@ -23,7 +23,7 @@ class WaveTimer:
         t_total = enemies.spawn_interval
         ratio   = max(0.0, t_left / max(1, t_total))
 
-        # Position: top-center, just below combo display
+        
         from ui.layout import CX, WAVETIMER_Y
         bar_w  = 200
         bar_x  = CX - bar_w // 2
@@ -32,18 +32,18 @@ class WaveTimer:
         panel = pygame.Rect(bar_x - 10, bar_y - 6, bar_w + 20, 36)
         draw_panel(surf, panel, alpha=190, radius=8)
 
-        # Wave label
+       
         wave_lbl = self.font_xs.render(f"WAVE  {wave}", True, C_GRAY)
         surf.blit(wave_lbl, (bar_x, bar_y - 2))
 
-        # Next wave countdown
+        
         if boss_mgr.intro_timer > 0:
             col  = (255, 100, 255)
             txt  = "BOSS"
         elif ratio < 0.2:
             col  = C_DANGER
             txt  = f"{t_left:.1f}s"
-            # Urgent pulse
+           
             a = int(abs(math.sin(self.pulse * 6)) * 60)
             urg = pygame.Surface((bar_w + 20, 36), pygame.SRCALPHA)
             pygame.draw.rect(urg, (*C_DANGER, a), (0, 0, bar_w + 20, 36),
@@ -59,7 +59,7 @@ class WaveTimer:
         time_surf = self.font_xs.render(txt, True, col)
         surf.blit(time_surf, (bar_x + bar_w - time_surf.get_width(), bar_y - 2))
 
-        # Progress bar
+      
         pygame.draw.rect(surf, (30, 20, 50),
                          (bar_x, bar_y + 18, bar_w, 5), border_radius=2)
         fill_w = int(bar_w * (1.0 - ratio))   # fills as wave approaches
@@ -67,7 +67,7 @@ class WaveTimer:
             pygame.draw.rect(surf, col,
                              (bar_x, bar_y + 18, fill_w, 5), border_radius=2)
 
-        # Enemy count on screen
+       
         alive_count = sum(1 for e in enemies.enemies if e.alive)
         if alive_count > 0:
             ec = self.font_xs.render(f"☠ {alive_count} enemies", True, C_DANGER)

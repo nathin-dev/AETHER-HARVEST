@@ -24,7 +24,6 @@ class UpgradeSystem:
         cost = self.costs[upgrade_id]
         resources -= cost
         self.levels[upgrade_id] += 1
-        # Scale cost
         self.costs[upgrade_id] = int(cost * u["cost_scale"])
         return resources, True
 
@@ -43,7 +42,6 @@ class UpgradeSystem:
                 return u
         return None
 
-    # ── Derived stats ─────────────────────────────────────────────────────────
 
     @property
     def click_power(self):

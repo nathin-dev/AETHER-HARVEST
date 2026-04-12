@@ -1,96 +1,97 @@
 """
-
-Prestige system for Aether harvesting.
-Reach wave 20, then prestige to reset with permenant bonuses.
+Prestige system for AETHER HARVEST.
+Reach wave 20, then prestige to reset with permanent bonuses.
 """
-
-import json, os 
+import json, os
 
 PRESTIGE_FILE = "data/prestige.json"
 
 PRESTIGE_BONUSES = {
-    1: {"name": "Aether Resonance", "desc": "+25% all ore value", "ore_mult": 1.25}
-    ,
-    2: {"name": "Void Attunement", "desc": "+1 starting click power", "click": 1},
-    3: {"name": "Phase Mastery", "desc": "keep 10% of resources", "keep_pct": 0.10}
-    ,
-    4: {"name": "Eternal Harvest", "desc": "+50% auto income", "auto": 0.50}
-    ,
-    5: {"name": "Void Immunity", "desc": "+30 max HP", "hp": 30},
-    6: {"name": "crystal Overload", "desc": "Chain chance starts at 20%", "chain": 0.20}
-    ,
-    8: {"name": "Aether Ascendant", "desc": "All bonuses x2", "double": True},
-
+    1:  {"name": "Aether Resonance",  "desc": "+25% all ore value",         "ore_mult": 1.25},
+    2:  {"name": "Void Attunement",   "desc": "+1 starting click power",    "click":    1},
+    3:  {"name": "Crystal Memory",    "desc": "Keep 10% of resources",      "keep_pct": 0.10},
+    4:  {"name": "Phase Mastery",     "desc": "+20% move speed permanently","speed":    0.20},
+    5:  {"name": "Eternal Harvest",   "desc": "+50% auto income",           "auto":     0.50},
+    6:  {"name": "Void Immunity",     "desc": "+30 max HP",                 "hp":       30},
+    7:  {"name": "Crystal Overload",  "desc": "Chain chance starts at 20%", "chain":    0.20},
+    8:  {"name": "Aether Ascendant",  "desc": "All bonuses ×2",            "double":   True},
 }
 
 class PrestigeSystem:
     def __init__(self):
-        self.prestige_level = 0 
-        self.total_prestiges = 0
-        self.bonuses = {} # Accumulated bonus dict
+        self.prestige_level = 0
+        self.total_prestiges= 0
+        self.bonuses        = {}  
         self._load()
 
     def _load(self):
         try:
             if os.path.exists(PRESTIGE_FILE):
                 with open(PRESTIGE_FILE) as f:
-                    d = json.loaf(f)
-                self.prestige_level = d.get("prestige_level", 0)
+                    d = json.load(f)
+                self.prestige_level  = d.get("prestige_level", 0)
                 self.total_prestiges = d.get("total_prestiges", 0)
-                self.bonuses = d.get("bonuses", {})
+                self.bonuses         = d.get("bonuses", {})
         except Exception:
-            pass 
+            pass
+
+    def save(self):
+        os.makedirs("data", exist_ok=True)
+        with open(PRESTIGE_FILE, "w") as f:
+            json.dump({"prestige_level":  self.prestige_level,
+                       "total_prestiges": self.total_prestiges,
+                       "bonuses":         self.bonuses}, f, indent=2)
 
     def can_prestige(self, wave):
-        return wave >= 20 
-    
+        return wave >= 20
+
     def do_prestige(self, resources):
         """Reset, apply bonus, return kept resources."""
-        self.prestige_level +=1
-        self.total_prestiges +=1
+        self.prestige_level  += 1
+        self.total_prestiges += 1
         self._accumulate_bonus(self.prestige_level)
         self.save()
         keep_pct = self.bonuses.get("keep_pct", 0.0)
         return int(resources * keep_pct)
-    
-    def _accumulate(self, level):
+
+    def _accumulate_bonus(self, level):
         if level in PRESTIGE_BONUSES:
             b = PRESTIGE_BONUSES[level]
             for k, v in b.items():
-                if k in ("name", "desc"):
-                    continue 
+                if k in ("name","desc"):
+                    continue
                 if k == "double":
                     for bk in self.bonuses:
-                        self.bonuses[bk] = self.bonuses[bk] * 2 if isinstance(self.bonuses[bk], (int, float)) else self.bonuses[bk]
+                        self.bonuses[bk] = self.bonuses[bk] * 2 if isinstance(self.bonuses[bk], (int,float)) else self.bonuses[bk]
                 else:
-                    self.bonuses[k] = self.bonuses.get(k, 0) + v 
+                    self.bonuses[k] = self.bonuses.get(k, 0) + v
 
     def apply_to_session(self, player, upgrades):
         """Apply prestige bonuses to a new session."""
         if self.bonuses.get("click"):
             upgrades.levels["pick_power"] = max(
-                upgrades.levels[pick_power],
+                upgrades.levels["pick_power"],
                 int(self.bonuses["click"]))
         if self.bonuses.get("speed"):
-            player.speed_mult = max(player.speed_mult, 1.0 + self.bonuses["speed"])
+            player.speed_mult = max(player.speed_mult,
+                                    1.0 + self.bonuses["speed"])
         if self.bonuses.get("hp"):
             player.max_hp += int(self.bonuses["hp"])
-            player.hp = player.max_hp 
+            player.hp      = player.max_hp
         if self.bonuses.get("chain"):
-            upgrades.levels["crystal echo"],
-            int(self.bonuses["chain"] / 0.10)
+            upgrades.levels["crystal_echo"] = max(
+                upgrades.levels["crystal_echo"],
+                int(self.bonuses["chain"] / 0.10))
 
-    @property 
+    @property
     def ore_mult(self):
         return self.bonuses.get("ore_mult", 1.0)
-    
-    @property 
+
+    @property
     def auto_mult(self):
         return 1.0 + self.bonuses.get("auto", 0.0)
-    
-    @property 
+
+    @property
     def next_bonus(self):
         nxt = self.prestige_level + 1
         return PRESTIGE_BONUSES.get(nxt, None)
-    
-

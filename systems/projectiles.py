@@ -27,7 +27,7 @@ class Projectile:
         self.radius = radius 
         self.life = life 
         self.alive = True 
-        self.pierce = pierce # How many enemies pass through 
+        self.pierce = pierce 
 
     
     def update(self, dt):
@@ -42,17 +42,18 @@ class Projectile:
             return 
         sx, sy  = cam.world_to_screen(self.x, self.y)
 
-        # Trail glow 
+        
         trail_len = 3 
         for i in range(trail_len, 0, -1):
             tx = sx - int(self.vx * 0.003 * i)
             ty = sy - int(self.vy * 0.003 * i)
             a = int(120 // (i+1))
+            r  = max(1, self.radius - i)
             gs = pygame.Surface((r * 2 + 2, r * 2 + 2), pygame.SRCALPHA)
             pygame.draw.circle(gs, (*self.glow, a), (r + 1, r + 1), r)
             surf.blit(gs, (tx - r - 1, ty - r -1 ), special_flags=pygame.BLEND_ADD)
 
-        # Core 
+       
         pygame.draw.circle(surf, self.color, (sx, sy), self.radius)
         pygame.draw.circle(surf, (255, 255, 255), (sx, sy), max(1, self.radius -2 ))
 
@@ -60,14 +61,14 @@ class ProjectileSystem:
     def __init__(self):
         self.projectiles = []
         self.shoot_cd = 0.0
-        self.shoot_range = 0.45  # seconds between shots
+        self.shoot_range = 0.45  
         self.damage = 10
         self.pierce = 0 
 
     def try_shoot(self, player_x, player_y, target_x, target_y, dt, upgrades_lvl=0):
         """ call every frame with mouse world position. Fires if cooldown ready +. """
         self.shoot_cd = max(0, self.shoot_cd - dt)
-        # scale with upgrades 
+       
         self.damage = 10 + upgrades_lvl * 5 
         self.pierce = upgrades_lvl // 3
         rate_mult = max(0.4, 1.0 - upgrades_lvl * 0.05)
@@ -113,14 +114,14 @@ class ProjectileSystem:
         dead = []
         for proj in self.projectiles:
             if not  proj.alive:
-                dead.append(pro)
+                dead.append(proj)
                 continue 
             proj.update(dt)
             if not proj.alive:
                 dead.append(proj)
                 continue 
 
-            # check enemy hits 
+           
             hits =0 
             for enemy in enemies:
                 if not enemy.alive:
@@ -137,10 +138,10 @@ class ProjectileSystem:
                         dead.append(proj)
                         break 
 
-            # check boss hit
+          
             if proj.alive and boss_mgr.boss and boss_mgr.boss.alive:
                 b =  boss_mgr.boss
-                d = disy(proj.x, proj.y, b.x, b.y)
+                d = dist(proj.x, proj.y, b.x, b.y)
                 if d < proj.radius + b.size:
                     b.take_damage(proj.damage)
                     total_dmg += proj.damage 

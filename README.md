@@ -1,40 +1,97 @@
-# Infinite Harvest  v2.0
+🚀 AETHER HARVEST v2.0
 
-> Crystal mining . Wave defense . Idle upgrade - set in deep space 
+Crystal Mining · Wave Defense · Idle Upgrades — in deep space
 
----
+Survive escalating enemy waves, harvest rare crystals, and build powerful upgrades in a fast-paced arcade loop with idle mechanics.
 
-## Quick Start
+▶️ Play the Game
+🐧 Linux (Recommended)
 
-```bash
+Download the AppImage from Releases and run:
+
+chmod +x Aether_Harvest-x86_64.AppImage
+./Aether_Harvest-x86_64.AppImage
+🪟 Windows
+
+Download the .exe from Releases and double-click to play:
+
+AetherHarvest.exe
+
+No installation required.
+
+🧑‍💻 Run from source (any OS)
 pip install pygame
 python main.py
-```
 
-| Key / Button | Action |
-|---|---|
-|`WASD` / Arrows | Move|
-|`Space` | Dash - brief invincibility, high speed |
-| `Left Click` (world) | Harvest crsytal ore |
-| `S` | Save Game |
-| `Esc` | Quit |
+🎮 Controls
+Key / Button	Action
+WASD / Arrow Keys	Move
+Space	Dash (invincibility + burst speed)
+Left Click (world)	Harvest crystals
+Left Click (panel)	Buy upgrades
+S	Save game
+Esc	Quit
 
----
+🔁 Gameplay Loop
+Move through a large scrolling map
+Harvest glowing crystal ores
+Spend resources on upgrades
+Survive enemy waves every ~18 seconds
+Face boss fights every 5 waves
+Repeat, scale, dominate 💎
 
-# gamePlay Loop
+💎 Crystal Types
+Ore	Value	Rarity
+Aether	×1	Common
+Lumite	×3	Uncommon
+Solaris	×8	Rare
+Voidite	×25	Very Rare
 
-1. **Move** around the map and **click** glowing crystals to harvest them
-2. **Spend** resources on upgrades in the right hand panel
-3. **Survive** enemy waves that get harder every 18 seconds
-4. **Boss fights** erupt every 5 waves - dodge their dash attacks and counter
-5. Repeat - the world is 2x your screen , so explore!
+⚡ Upgrades
+⚡ Resonance Pick → stronger clicks
+🤖 Drone Swarm → passive income
+🧲 Void Magnet → better rare spawns
+🌀 Warp Field → bigger pickup range
+💎 Crystal Echo → chain reactions
+⏱ Temporal Surge → slow-motion effects
+🔥 Combo System
 
-___
+Harvest quickly to multiply your gains:
 
-# crystal ore types 
+×1.25 → ×1.50 → ×2 → ×3 → ×5 → ×8
 
-| Ore | Color | Value | Rarity |
-|-----|-------|-------|---------|
-|Aether|Violet| X1    |common (60%)|
-|
-|
+⏱ Combo resets if you stop collecting.
+
+☠️ Enemies
+Void Wisp → fast swarm
+Crystal Golem → slow tank
+Void Hunter → high-speed attacker
+
+👑 Bosses appear every 5 waves with special mechanics.
+
+📁 Project Structure
+game/
+├── main.py
+├── engine/
+├── entities/
+├── systems/
+├── ui/
+├── world/
+├── core/
+├── utils/
+└── data/
+
+📦 Downloads
+
+👉 Get the latest version from GitHub Releases
+
+Linux → AppImage
+Windows → .exe
+🧠 Notes
+Works fully offline
+No install required
+Designed for fast sessions + replayability
+🎮 Status
+
+✅ Fully playable
+🚀 Actively evolving

@@ -1,10 +1,10 @@
 {
   "unlocked": [
-    "first_blood",
-    "first_upgrade",
-    "wave_5",
     "no_damage",
-    "first_kill"
+    "wave_5",
+    "first_upgrade",
+    "first_kill",
+    "first_blood"
   ],
   "stats": {
     "crystals_collected": 80,

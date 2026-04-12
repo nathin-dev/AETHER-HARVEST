@@ -1,8 +1,8 @@
 {
-  "resources": 14.0,
+  "resources": 118.24999999999807,
   "upgrade_levels": {
     "pick_power": 0,
-    "auto_harvest": 0,
+    "auto_harvest": 1,
     "ore_magnet": 0,
     "warp_field": 0,
     "crystal_echo": 0,
@@ -10,11 +10,24 @@
   },
   "upgrade_costs": {
     "pick_power": 15,
-    "auto_harvest": 40,
+    "auto_harvest": 72,
     "ore_magnet": 80,
     "warp_field": 120,
     "crystal_echo": 200,
     "temporal_surge": 350
   },
-  "wave": 6
+  "wave": 4,
+  "mode_id": "classic",
+  "difficulty_id": "easy",
+  "xp": {
+    "xp": 47,
+    "level": 1,
+    "xp_to_next": 226,
+    "total_xp": 47,
+    "kills": 8,
+    "bonus_click": 0,
+    "bonus_hp": 0,
+    "bonus_range": 0,
+    "income_mult": 1.0
+  }
 }

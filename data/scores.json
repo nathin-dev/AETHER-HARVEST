@@ -1,1 +1,11 @@
-{}
+{
+  "void_siege": [
+    {
+      "score": 1540,
+      "wave": 10,
+      "time": 107.6,
+      "difficulty": "hard",
+      "date": "12/04/2026"
+    }
+  ]
+}

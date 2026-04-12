@@ -1,82 +1,65 @@
-"""
-Aether Harvest - Master Layout 
-All hud coordinates live here 
-"""
 W, H = 1280, 720
 
-# - Right Panel - #
-PANEL_W = 260
-PANEL_X = W - PANEL_W - 8
-PANEL_Y = 8
-PANEL_H  = H - 16
+PANEL_W   = 260
+PANEL_X   = W - PANEL_W - 8
+PANEL_Y   = 8
+PANEL_H   = H - 16
 
-# Upgrade buttons inside the panel 
-PANEL_BTN_H = 58 
-PANEL_BTN_GAP  = 6
-PANEL_BTN_X = PANEL_X + 6
-PANEL_BTN_W = PANEL_W - 12
+PANEL_BTN_H   = 58
+PANEL_BTN_GAP = 6
+PANEL_BTN_X   = PANEL_X + 6
+PANEL_BTN_W   = PANEL_W - 12
 
-# Minimap embedded at the bottom of the panel 
-MM_W = PANEL_W - 16 
-MM_H = 90 
-MM_X = PANEL_X + 8
-MM_Y = PANEL_W - PANEL_H - MM_H - 8 #614 
+MM_W    = PANEL_W - 16
+MM_H    = 90
+MM_X    = PANEL_X + 8
+MM_Y    = PANEL_Y + PANEL_H - MM_H - 8
 
-# upgrade scrollable area (above minimap)
-PANEL_SCROLL_TOP = PANEL_Y + 36 # below title 
+PANEL_SCROLL_TOP = PANEL_Y + 36
 PANEL_SCROLL_BOT = MM_Y - 6
 
-# - Left column (top -> bottom, no overlaps) - #
+LX        = 8
+LW        = 280
 
-LX = 8
-LW =280 
+RES_Y     = 8
+HP_Y      = 58
+BADGE_Y   = 88
+MODE_Y    = 114
 
-RES_Y =8 #reasource bar h=44
-HP_Y = 58 # HP bar h=24
-BADGE_Y = 88 # Danger badge h=20
-MODE_Y = 114 # Mode badge h=20
+WEAPON_Y  = 513
+STATS_Y   = 579
+FPS_Y     = 699
 
-# gap 140..513 = free game space
+XP_Y      = H - 5
 
-WEAPON_Y = 513 # Weapon info h=60
-STATS_Y = 579 # Active stats h=94 
-FPS_Y  = 699 # FPS Counter h=14
+CX        = W // 2
 
-XP_Y  = H - 5 # XP strip h=5
+COMBO_Y      = 50
+WAVETIMER_Y  = 108
+TIMER_Y      = 6
 
+AB_Y      = 620
+AB_W      = 60
+AB_H      = 60
+AB_GAP    = 8
+AB_TOTAL  = 3 * AB_W + 2 * AB_GAP
+AB_X      = CX - AB_TOTAL // 2
 
-# - Centre Column - #
-CX = W // 2
+LOOT_X    = AB_X + AB_TOTAL + 16
+LOOT_Y    = AB_Y
+LOOT_MAX_W= PANEL_X - LOOT_X - 4
 
-COMBO_Y = 50 # Combo multiplier h=52
-WAVETIMER_Y = 108 # Next-wave countdown h=38
-TIMER_Y = 6 # Timed-mode clock h=36 
-
-# - Bottom Center Row  (y=620) - #
-
-AB_Y  =620
-AB_W = 60
-AB_H = 60
-AB_GAP = 8
-AB_TOTAL = 3 * AB_W + 2 * AB_GAP # 196
-AB_X = CX - AB_TOTAL // 2 # 542 
-
-LOOT_X = AB_X + AB_TOTAL + 16 # 196 
-LOOT_Y  = AB_Y
-LOOT_MAX_W = PANEL_X - LOOT_X -4 # 254  
-
-# - VALIDATION (Called once during startup) - #
 def validate():
     regions = [
-        ("resource bar", LX,RES_Y,LW,44),
-        ("HP Bar", LX,HP_Y,200,24),
+        ("Resource bar", LX,RES_Y,LW,44),
+        ("HP bar",       LX,HP_Y,200,24),
         ("Danger badge", LX,BADGE_Y,200,20),
-        ("Mode badge", LX,MODE_Y,200,20),
-        ("Weapon HUD", LX,WEAPON_Y,210,60),
-        ("Stats", LX,STATS_Y,220,94),
-        ("FPS", LX,STATS_Y,220,94),
-        ("XP bar",  LX,XP_Y,W,5),
-        ("Combo", CX-120,COMBO_Y,240,52),
+        ("Mode badge",   LX,MODE_Y,200,20),
+        ("Weapon HUD",   LX,WEAPON_Y,210,60),
+        ("Stats",        LX,STATS_Y,220,94),
+        ("FPS",          LX,FPS_Y,50,14),
+        ("XP bar",       0,XP_Y,W,5),
+        ("Combo",        CX-120,COMBO_Y,240,52),
         ("WaveTimer",    CX-120,WAVETIMER_Y,240,38),
         ("Abilities",    AB_X,AB_Y,AB_TOTAL,AB_H),
         ("Loot effects", LOOT_X,LOOT_Y,LOOT_MAX_W,AB_H),
@@ -93,4 +76,3 @@ def validate():
             if ov((x1,y1,w1,h1),(x2,y2,w2,h2)):
                 bad.append(f"OVERLAP: {n1} ↔ {n2}")
     return bad
-

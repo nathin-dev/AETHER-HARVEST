@@ -1,40 +1,40 @@
 """
-
-resource / Ore system for Infinite Harvest
+Resource / Ore system for AETHER HARVEST
 """
-
 import pygame
 import math
-import random 
+import random
 from utils.constants import ORE_TYPES, WIDTH, HEIGHT
 from utils.math_utils import dist, lerp, random_on_ring
 
-WORLD_W = WIDTH * 2
+
+WORLD_W = WIDTH  * 2
 WORLD_H = HEIGHT * 2
 MAX_ORES = 18
 
-class Ore:
-    def __init__(self,x ,y, ore_type):
-        cfg = ORE_TYPES[ore_type]
-        self.x = float(x)
-        self.y = float(y)
-        self.type = ore_type 
-        self.color = cfg["color"]
-        self.glow = cfg["glow"]
-        self.value = cfg["value"]
-        self.radius  = 16 + (cfg["value"] - 1) * 2
-        self.radius = min(self.radius, 8)
 
-        self.alive = True 
-        self.pulse = random.uniform(0, math.tau)
-        self.scale  = 0.0 # spawn animation
+class Ore:
+    def __init__(self, x, y, ore_type):
+        cfg = ORE_TYPES[ore_type]
+        self.x         = float(x)
+        self.y         = float(y)
+        self.type      = ore_type
+        self.color     = cfg["color"]
+        self.glow      = cfg["glow"]
+        self.value     = cfg["value"]
+        self.radius    = 16 + (cfg["value"] - 1) * 2
+        self.radius    = min(self.radius, 28)
+
+        self.alive     = True
+        self.pulse     = random.uniform(0, math.tau)
+        self.scale     = 0.0   
         self.bob_phase = random.uniform(0, math.tau)
-        self.collected = False 
+        self.collected = False
 
     def update(self, dt):
-        self.pulse += dt * 2.0 
-        self.bob_phase += dt * 1.5 
-        self.scale = min(1.0, self.scale + dt * 4 )
+        self.pulse     += dt * 2.0
+        self.bob_phase += dt * 1.5
+        self.scale      = min(1.0, self.scale + dt * 4)
 
     def draw(self, surf, cam):
         sx, sy = cam.world_to_screen(self.x, self.y)
@@ -45,7 +45,7 @@ class Ore:
 
         sy_draw = sy + int(bob)
 
-        # Outer glow
+        
         glow_r = radius + 12
         glow_s = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
         pygame.draw.circle(glow_s, (*self.glow, 35),
@@ -53,17 +53,17 @@ class Ore:
         surf.blit(glow_s, (sx - glow_r, sy_draw - glow_r),
                   special_flags=pygame.BLEND_ADD)
 
-        # Gem shape (hexagon approximation via circle + facets)
+        
         pygame.draw.circle(surf, self.color, (sx, sy_draw), radius)
 
-        # Facet highlight
+
         facet_r = radius - 4
         if facet_r > 2:
             hx = sx - radius // 4
             hy = sy_draw - radius // 3
             pygame.draw.circle(surf, (255, 255, 255), (hx, hy), max(1, facet_r // 3))
 
-        # Crystal edges
+       
         n_edges = 6 if self.value < 8 else 8
         for i in range(n_edges):
             angle = self.pulse * 0.3 + i * math.tau / n_edges
@@ -73,7 +73,7 @@ class Ore:
             ey2 = sy_draw + int(math.sin(angle + math.tau / n_edges) * radius)
             pygame.draw.line(surf, (*self.glow, 160), (ex, ey), (ex2, ey2), 1)
 
-        # Rarity ring for rare ores
+       
         if self.value >= 8:
             ring_r = radius + 6
             pygame.draw.circle(surf, self.glow, (sx, sy_draw), ring_r, 1)
@@ -88,6 +88,7 @@ class ResourceSystem:
     def __init__(self):
         self.ores       = []
         self.total_ores = MAX_ORES
+        self.rare_boost = 0.0  
         self._spawn_initial()
 
     def _spawn_initial(self):
@@ -95,9 +96,18 @@ class ResourceSystem:
             self._spawn_ore()
 
     def _spawn_ore(self, near_x=None, near_y=None):
-        # Weighted random type
+      
         types   = list(ORE_TYPES.keys())
-        weights = [ORE_TYPES[t]["rarity"] for t in types]
+        base_w  = [ORE_TYPES[t]["rarity"] for t in types]
+       
+        boost   = self.rare_boost  
+        weights = list(base_w)
+        stolen  = weights[0] * boost       
+        weights[0] -= stolen
+        weights[1] += stolen * 0.50        
+        weights[2] += stolen * 0.35        
+        weights[3] += stolen * 0.15        
+        weights = [max(1, w) for w in weights]
         ore_type = random.choices(types, weights=weights)[0]
 
         if near_x and near_y:
@@ -119,7 +129,7 @@ class ResourceSystem:
         for ore in self.ores:
             ore.update(dt)
 
-        # Check collection (proximity or click handled via external click)
+        
         return resources_gained, voidite
 
     def try_collect(self, wx, wy, player, particles, floating_texts,
@@ -136,13 +146,13 @@ class ResourceSystem:
             if d < ore.radius + player.collect_radius:
                 to_remove.append(ore)
 
-        # Chain reaction
+       
         if to_remove:
             import random as _rng
             for ore in to_remove:
                 ore.alive = False
                 val = ore.value * click_power
-                # Chain bonus
+               
                 chain_rolls = 0
                 while _rng.random() < chain_chance and chain_rolls < 5:
                     val = int(val * 1.5)
@@ -170,42 +180,36 @@ class ResourceSystem:
     def auto_collect(self, dt, player, auto_income):
         """Passive income tick."""
         return auto_income * dt
-    
+
     def vacuum_collect(self, player, particles, floating_texts, font_sm, click_power):
-        """ Aether lens: suck up ores near player while they are moving."""
+        """Aether Lens: suck up ores near player while they are moving."""
         if player.vacuum_radius <= 0:
-            return 0 
+            return 0
         speed = math.hypot(player.vx, player.vy)
-        if speed < 30: # only while actually moving 
+        if speed < 30:  
             return 0
         gained = 0
         to_remove = []
         for ore in self.ores:
             if not ore.alive:
-                continue 
+                continue
             d = dist(ore.x, ore.y, player.x, player.y)
-            if d < player.vaccum_radius:
+            if d < player.vacuum_radius:
                 to_remove.append(ore)
         for ore in to_remove:
-            ore.alive = False 
-            val = ore.value * click_power 
-            gained += val 
+            ore.alive = False
+            val = ore.value * click_power
+            gained += val
             particles.burst(ore.x, ore.y, ore.color, count=8,
                             speed=80, life=0.5, size=4, glow=True)
-
             floating_texts.add(ore.x, ore.y - 20,
                                f"+{val}", font_sm, ore.glow)
-        
         self.ores = [o for o in self.ores if o.alive]
         while len(self.ores) < self.total_ores:
             self._spawn_ore(player.x, player.y)
-        return gained 
-    
-            
+        return gained
 
     def draw(self, surf, cam):
         for ore in self.ores:
             ore.draw(surf, cam)
-
-
 

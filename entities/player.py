@@ -19,12 +19,12 @@ class Player:
         self.vx = 0.0
         self.vy = 0.0
 
-        # Stats
+       
         self.max_hp  = 100
         self.hp  = 100
-        self.invincible = 0.0 # seconds of invincibility
+        self.invincible = 0.0 
 
-        # Dash 
+      
         self.dash_time = 0.0
         self.dash_cd =  0.0
         self.dashing = False 
@@ -35,11 +35,11 @@ class Player:
         self.angle = 0.0
         self.pulse = 0.0 
 
-        # Trail
-        self.trail = []   # List of (x, y, age)
+       
+        self.trail = []   
         self.trail_max = 18
 
-        # Collection range multiplier (from upgrades)
+       
         self.collect_range_bonus = 0 
 
     @property 
@@ -62,7 +62,7 @@ class Player:
         self.invincible = max(0, self.invincible - dt)
         self.dash_cd = max(0, self.dash_cd - dt)
 
-        # Directional Input
+       
         dx, dy = 0.0, 0.0
         if inp.key_held(pygame.K_w) or inp.key_held(pygame.K_UP): dy -= 1
         if inp.key_held(pygame.K_s) or inp.key_held(pygame.K_DOWN): dy+=1
@@ -70,7 +70,7 @@ class Player:
         if inp.key_held(pygame.K_d) or inp.key_held(pygame.K_RIGHT): dx += 1
         dx, dy = normalize(dx, dy)
 
-        # Dash 
+        
         if inp.key_pressed(pygame.K_SPACE) and self.dash_cd <= 0 and (dx or dy):
             self.dashing = True 
             self.dash_time = DASH_DURATION
@@ -94,11 +94,11 @@ class Player:
         self.x = clamp(self.x + self.vx * dt, self.RADIUS, world_w - self.RADIUS)
         self.y = clamp(self.y + self.vy * dt, self.RADIUS, world_h - self.RADIUS)
 
-        # Update Facing angle
+       
         if dx or dy:
             self.angle = math.atan2(dx, dy)
 
-        # Trail 
+        
         speed = math.hypot(self.vx, self.vy)
         if speed > 20:
             self.trail.append([self.x, self.y, 1.0])
@@ -112,7 +112,7 @@ class Player:
         sx, sy = cam.world_to_screen(self.x, self.y)
         pulse = abs(math.sin(self.pulse))
 
-        # Draw Trail
+       
         for i, (tx, ty, age) in enumerate(self.trail):
             tsx, tsy = cam.world_to_screen(tx, ty)
             alpha = int(age * 180 * (i / max(1, len(self.trail))))
@@ -122,28 +122,28 @@ class Player:
             pygame.draw.circle(s, (*color, alpha), (radius + 1, radius + 1), radius)
             surf.blit(s, (tsx - radius - 1, tsy - radius - 1))
 
-        # Glow Ring when invincible
+       
         if self.invincible > 0 and int(self.invincible * 10) % 2 ==0:
             from engine.renderer import draw_glow_circle 
             draw_glow_circle(surf, (255, 220, 80), (sx, sy), self.RADIUS + 6, intensity=120,
                              layers =2)
         
-        # Outer Glow
+       
         glow_r = int(self.RADIUS * (1.4 + pulse * 0.2))
         glow_s = pygame.Surface((glow_r * 2 + 4, glow_r * 2 + 4), pygame.SRCALPHA)
         pygame.draw.circle(glow_s, (*C_SECONDARY, 50), (glow_r + 2, glow_r + 2), glow_r)
         surf.blit(glow_s, (sx - glow_r -2, sy - glow_r - 2), special_flags=pygame.BLEND_ADD)
 
-        # Core circle
+       
         pygame.draw.circle(surf, C_SECONDARY, (sx, sy), self.RADIUS)
         pygame.draw.circle(surf, (200, 255, 250), (sx, sy), self.RADIUS - 4)
 
-        # Direction pip
+       
         pip_x = sx + int(math.cos(self.angle) * (self.RADIUS - 4))
         pip_y = sy + int(math.sin(self.angle) * (self.RADIUS - 4))
         pygame.draw.circle(surf, C_PRIMARY, (pip_x, pip_y), 4)
 
-        # Dash cooldown arc
+       
         if self.dash_cd > 0:
             ratio = 1.0 - self.dash_cd / DASH_COOLDOWN
             angle_end = int(-90 + ratio * 360)

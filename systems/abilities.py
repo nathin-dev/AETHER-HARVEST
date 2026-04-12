@@ -71,7 +71,7 @@ class AbilitySystem:
             Ability("void_pulse"),
             Ability("aether_shield"),
         ]
-        self.shield_active = 0.0   # seconds remaining
+        self.shield_active = 0.0  
 
     def update(self, dt):
         for a in self.abilities:
@@ -108,7 +108,7 @@ class AbilitySystem:
 
         for ore in to_kill:
             ore.alive = False
-            val = ore.value * 3   # triple value from ability
+            val = ore.value * 3   
             gained += val
             particles.burst(ore.x, ore.y, ore.color,
                             count=20, speed=200, life=1.0, size=7, glow=True)
@@ -119,7 +119,7 @@ class AbilitySystem:
         while len(res_sys.ores) < res_sys.total_ores:
             res_sys._spawn_ore(player.x, player.y)
 
-        # Big screen-wide flash
+       
         particles.burst(player.x, player.y, (255, 200, 80),
                         count=50, speed=300, life=1.5, size=8, glow=True)
         return gained
@@ -132,12 +132,12 @@ class AbilitySystem:
                 continue
             d = dist(enemy.x, enemy.y, player.x, player.y)
             if d < pulse_r:
-                # Knockback
+                
                 nx, ny = normalize(enemy.x - player.x, enemy.y - player.y)
                 force  = (1.0 - d / pulse_r) * 600
                 enemy.vx += nx * force
                 enemy.vy += ny * force
-                # Damage scales with proximity
+               
                 dmg = int(40 * (1.0 - d / pulse_r) + 15)
                 enemy.take_damage(dmg)
                 particles.burst(enemy.x, enemy.y, (120, 60, 255),
@@ -149,7 +149,7 @@ class AbilitySystem:
             if d < pulse_r:
                 b.take_damage(80)
 
-        # Shockwave ring particles
+       
         for i in range(32):
             angle = i * math.tau / 32
             px = player.x + math.cos(angle) * pulse_r
@@ -168,23 +168,21 @@ class AbilitySystem:
                         count=40, speed=150, life=1.2, size=6, glow=True)
 
     def draw_hud(self, surf, font_sm, font_xs):
-        """Draw ability slots at bottom-center."""
+        """Draw ability slots at bottom-center using layout constants."""
         import pygame
-        from utils.constants import WIDTH, HEIGHT, C_GRAY, C_WHITE
+        from utils.constants import C_GRAY, C_WHITE
         from engine.renderer import draw_panel, draw_glow_rect
+        from ui.layout import AB_X, AB_Y, AB_W, AB_H, AB_GAP
 
-        slot_w, slot_h = 64, 64
-        gap  = 10
-        keys = [pygame.K_q, pygame.K_e, pygame.K_f]
-        total_w = len(self.abilities) * (slot_w + gap) - gap
-        start_x = WIDTH // 2 - total_w // 2
-        y       = HEIGHT - slot_h - 30
+        slot_w, slot_h = AB_W, AB_H
+        gap    = AB_GAP
+        y      = AB_Y
 
         for i, ab in enumerate(self.abilities):
-            x = start_x + i * (slot_w + gap)
+            x = AB_X + i * (slot_w + gap)
             rect = pygame.Rect(x, y, slot_w, slot_h)
 
-            # Background
+            
             if ab.ready:
                 bg = (25, 18, 55)
                 border = ab.color
@@ -194,34 +192,28 @@ class AbilitySystem:
 
             draw_panel(surf, rect, color=bg, border=border, alpha=220, radius=10)
 
-            # Cooldown overlay
+            
             if not ab.ready:
                 overlay_h = int(slot_h * ab.cd_ratio)
                 ov = pygame.Surface((slot_w, overlay_h), pygame.SRCALPHA)
                 ov.fill((0, 0, 0, 140))
                 surf.blit(ov, (x, y + slot_h - overlay_h))
 
-                # CD timer
+                
                 cd_txt = font_xs.render(f"{ab.cd:.1f}", True, (200, 180, 255))
                 surf.blit(cd_txt, (x + slot_w//2 - cd_txt.get_width()//2,
                                    y + slot_h//2 - cd_txt.get_height()//2))
             else:
                 draw_glow_rect(surf, ab.color, rect, radius=4, alpha=40)
 
-            # Icon
+           
             icon_s = font_sm.render(ab.icon, True,
                                     ab.color if ab.ready else (80, 70, 100))
             surf.blit(icon_s, (x + slot_w//2 - icon_s.get_width()//2,
                                 y + 10))
 
-            # Key label
+           
             key_lbl = ["Q", "E", "F"][i]
             k_surf  = font_xs.render(key_lbl, True, C_GRAY)
             surf.blit(k_surf, (x + slot_w//2 - k_surf.get_width()//2,
-                                y + slot_h - 16))
-
-            # Name below
-            name_s = font_xs.render(ab.name, True, C_GRAY)
-            surf.blit(name_s, (x + slot_w//2 - name_s.get_width()//2,
-                                y + slot_h + 2))
-
+                                y + slot_h - 14))

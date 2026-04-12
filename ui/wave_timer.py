@@ -24,9 +24,10 @@ class WaveTimer:
         ratio   = max(0.0, t_left / max(1, t_total))
 
         # Position: top-center, just below combo display
-        bar_w  = 180
-        bar_x  = WIDTH // 2 - bar_w // 2
-        bar_y  = 116
+        from ui.layout import CX, WAVETIMER_Y
+        bar_w  = 200
+        bar_x  = CX - bar_w // 2
+        bar_y  = WAVETIMER_Y
 
         panel = pygame.Rect(bar_x - 10, bar_y - 6, bar_w + 20, 36)
         draw_panel(surf, panel, alpha=190, radius=8)

@@ -1,3 +1,4 @@
 dist/
 build/
 *.AppImage
+appimagetool-x86_64.AppImage

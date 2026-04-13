@@ -93,17 +93,20 @@ class ParticleSystem:
                       end_size=0,
                       glow=glow)
 
-    def trail(self, x, y, color, vx=0, vy=0):
-        self.emit(x + random.uniform(-4, 4),
-                  y + random.uniform(-4, 4),
-                  vx * 0.1 + random.uniform(-20, 20),
-                  vy * 0.1 + random.uniform(-20, 20),
-                  life=random.uniform(0.2, 0.5),
-                  color=color, end_color=(20, 10, 40),
-                  size=random.uniform(2, 5), glow=True)
+    def trail(self, x, y, color, vx=0, vy=0, life=None):
+        self.emit(
+            x + random.uniform(-4, 4),
+            y + random.uniform(-4, 4),
+            vx * 0.1 + random.uniform(-20, 20),
+            vy * 0.1 + random.uniform(-20, 20),
+            life=random.uniform(0.2, 0.5) if life is None else life,
+            color=color,
+            end_color=(20, 10, 40),
+            size=random.uniform(2, 5),
+            glow=True
+    )
 
     def text_pop(self, x, y, text, font, color, surf):
-       
         pass
 
     def update(self, dt):

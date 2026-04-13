@@ -1,25 +1,29 @@
 {
   "unlocked": [
-    "no_damage",
-    "wave_5",
-    "first_upgrade",
+    "kill_50",
     "first_kill",
-    "first_blood"
+    "wave_10",
+    "combo_king",
+    "wave_5",
+    "first_blood",
+    "first_upgrade",
+    "no_damage",
+    "century"
   ],
   "stats": {
-    "crystals_collected": 80,
-    "total_resources": 331,
-    "max_combo": 0,
+    "crystals_collected": 239,
+    "total_resources": 4686,
+    "max_combo": 8,
     "voidite_collected": 0,
-    "kills": 18,
+    "kills": 111,
     "bosses_killed": 0,
-    "max_wave": 5,
-    "upgrades_bought": 3,
+    "max_wave": 15,
+    "upgrades_bought": 20,
     "upgrades_maxed": 0,
-    "unique_upgrades": 1,
-    "player_level": 1,
+    "unique_upgrades": 7,
+    "player_level": 2,
     "blitz_wins": 0,
     "rush_best": 0,
-    "nodmg_wave3": 1
+    "nodmg_wave3": 3
   }
 }

@@ -1,14 +1,13 @@
 """
-
-Player entity for Infinite Harvest
+Player entity for AETHER HARVEST
 """
 import pygame
 import math
 import random
 from utils.constants import (WIDTH, HEIGHT, PLAYER_SPEED, PLAYER_DASH_SPEED,
-                             DASH_DURATION, DASH_COOLDOWN, C_SECONDARY, C_PRIMARY)
-
+                              DASH_DURATION, DASH_COOLDOWN, C_SECONDARY, C_PRIMARY)
 from utils.math_utils import clamp, normalize, lerp
+
 
 class Player:
     RADIUS = 16
@@ -20,85 +19,86 @@ class Player:
         self.vy = 0.0
 
        
-        self.max_hp  = 100
-        self.hp  = 100
-        self.invincible = 0.0 
-
-      
-        self.dash_time = 0.0
-        self.dash_cd =  0.0
-        self.dashing = False 
-        self.dash_vx = 0.0 
-        self.dash_vy = 0.0
-
-        # Visual
-        self.angle = 0.0
-        self.pulse = 0.0 
+        self.max_hp      = 100
+        self.hp          = 100
+        self.invincible  = 0.0     
 
        
-        self.trail = []   
-        self.trail_max = 18
+        self.dash_time    = 0.0
+        self.dash_cd      = 0.0
+        self.dashing      = False
+        self.dash_vx      = 0.0
+        self.dash_vy      = 0.0
 
        
-        self.collect_range_bonus = 0 
+        self.angle        = 0.0
+        self.pulse        = 0.0
 
-    @property 
+       
+        self.trail        = []      
+        self.trail_max    = 18
+
+       
+        self.collect_range_bonus = 0
+        self.speed_mult   = 1.0   
+        self.vacuum_radius = 0    
+
+    @property
     def collect_radius(self):
-        return 28 + self.collect_range_bonus 
-    
+        return 28 + self.collect_range_bonus
+
     def take_damage(self, amount):
         if self.invincible > 0:
-            return False 
-        self.hp -= amount 
-        self.invincible = 1.2
-        self.hp = clamp(self.hp, 0, self.max_hp)
-        return True 
-    
+            return False
+        self.hp          -= amount
+        self.invincible   = 1.2
+        self.hp           = clamp(self.hp, 0, self.max_hp)
+        return True
+
     def heal(self, amount):
         self.hp = clamp(self.hp + amount, 0, self.max_hp)
 
     def update(self, dt, inp, world_w, world_h):
-        self.pulse += dt * 3.0
+        self.pulse     += dt * 3.0
         self.invincible = max(0, self.invincible - dt)
-        self.dash_cd = max(0, self.dash_cd - dt)
+        self.dash_cd    = max(0, self.dash_cd - dt)
 
-       
+        
         dx, dy = 0.0, 0.0
-        if inp.key_held(pygame.K_w) or inp.key_held(pygame.K_UP): dy -= 1
-        if inp.key_held(pygame.K_s) or inp.key_held(pygame.K_DOWN): dy+=1
-        if inp.key_held(pygame.K_a) or inp.key_held(pygame.K_LEFT): dx -= 1
+        if inp.key_held(pygame.K_w) or inp.key_held(pygame.K_UP):    dy -= 1
+        if inp.key_held(pygame.K_s) or inp.key_held(pygame.K_DOWN):  dy += 1
+        if inp.key_held(pygame.K_a) or inp.key_held(pygame.K_LEFT):  dx -= 1
         if inp.key_held(pygame.K_d) or inp.key_held(pygame.K_RIGHT): dx += 1
         dx, dy = normalize(dx, dy)
 
-        
+       
         if inp.key_pressed(pygame.K_SPACE) and self.dash_cd <= 0 and (dx or dy):
-            self.dashing = True 
+            self.dashing  = True
             self.dash_time = DASH_DURATION
-            self.dash_cd = DASH_COOLDOWN
-            self.dash_vx = dx
-            self.dash_vy = dy 
-
+            self.dash_cd   = DASH_COOLDOWN
+            self.dash_vx   = dx
+            self.dash_vy   = dy
 
         if self.dashing:
             self.dash_time -= dt
             if self.dash_time <= 0:
-                self.dashing = False 
-            spd = PLAYER_DASH_SPEED 
+                self.dashing = False
+            spd = PLAYER_DASH_SPEED * self.speed_mult
             self.vx = self.dash_vx * spd
-            self.vy = self.dash_vy * spd 
+            self.vy = self.dash_vy * spd
             self.invincible = max(self.invincible, self.dash_time)
         else:
-            self.vx = dx * PLAYER_SPEED
-            self.vy = dy * PLAYER_SPEED 
-        
+            self.vx = dx * PLAYER_SPEED * self.speed_mult
+            self.vy = dy * PLAYER_SPEED * self.speed_mult
+
         self.x = clamp(self.x + self.vx * dt, self.RADIUS, world_w - self.RADIUS)
         self.y = clamp(self.y + self.vy * dt, self.RADIUS, world_h - self.RADIUS)
 
-       
-        if dx or dy:
-            self.angle = math.atan2(dx, dy)
-
         
+        if dx or dy:
+            self.angle = math.atan2(dy, dx)
+
+      
         speed = math.hypot(self.vx, self.vy)
         if speed > 20:
             self.trail.append([self.x, self.y, 1.0])
@@ -110,29 +110,28 @@ class Player:
 
     def draw(self, surf, cam):
         sx, sy = cam.world_to_screen(self.x, self.y)
-        pulse = abs(math.sin(self.pulse))
+        pulse  = abs(math.sin(self.pulse))
 
        
         for i, (tx, ty, age) in enumerate(self.trail):
             tsx, tsy = cam.world_to_screen(tx, ty)
-            alpha = int(age * 180 * (i / max(1, len(self.trail))))
+            alpha  = int(age * 180 * (i / max(1, len(self.trail))))
             radius = max(1, int(self.RADIUS * age * 0.6))
-            color = C_SECONDARY if self.dashing else C_PRIMARY 
+            color  = C_SECONDARY if self.dashing else C_PRIMARY
             s = pygame.Surface((radius * 2 + 2, radius * 2 + 2), pygame.SRCALPHA)
             pygame.draw.circle(s, (*color, alpha), (radius + 1, radius + 1), radius)
             surf.blit(s, (tsx - radius - 1, tsy - radius - 1))
 
        
-        if self.invincible > 0 and int(self.invincible * 10) % 2 ==0:
-            from engine.renderer import draw_glow_circle 
-            draw_glow_circle(surf, (255, 220, 80), (sx, sy), self.RADIUS + 6, intensity=120,
-                             layers =2)
-        
+        if self.invincible > 0 and int(self.invincible * 10) % 2 == 0:
+            from engine.renderer import draw_glow_circle
+            draw_glow_circle(surf, (255, 220, 80), (sx, sy), self.RADIUS + 6, intensity=120, layers=2)
+
        
         glow_r = int(self.RADIUS * (1.4 + pulse * 0.2))
         glow_s = pygame.Surface((glow_r * 2 + 4, glow_r * 2 + 4), pygame.SRCALPHA)
         pygame.draw.circle(glow_s, (*C_SECONDARY, 50), (glow_r + 2, glow_r + 2), glow_r)
-        surf.blit(glow_s, (sx - glow_r -2, sy - glow_r - 2), special_flags=pygame.BLEND_ADD)
+        surf.blit(glow_s, (sx - glow_r - 2, sy - glow_r - 2), special_flags=pygame.BLEND_ADD)
 
        
         pygame.draw.circle(surf, C_SECONDARY, (sx, sy), self.RADIUS)
@@ -147,8 +146,33 @@ class Player:
         if self.dash_cd > 0:
             ratio = 1.0 - self.dash_cd / DASH_COOLDOWN
             angle_end = int(-90 + ratio * 360)
-            rect = pygame.Rect(sx - self.Radius - 5, sy - self.Radius - 5,
-            (self.RADIUS + 5) * 2, (self.RADIUS + 5) * 2)
+            rect = pygame.Rect(sx - self.RADIUS - 5, sy - self.RADIUS - 5,
+                               (self.RADIUS + 5) * 2, (self.RADIUS + 5) * 2)
             pygame.draw.arc(surf, (180, 100, 255), rect,
                             math.radians(-90), math.radians(angle_end), 2)
-            
+
+        
+        if self.vacuum_radius > 0:
+            vr = self.vacuum_radius
+            segments = 16
+            for i in range(segments):
+                if i % 2 == 0:
+                    a1 = self.pulse * 0.5 + i * math.tau / segments
+                    a2 = self.pulse * 0.5 + (i + 0.8) * math.tau / segments
+                    x1 = sx + int(math.cos(a1) * vr)
+                    y1 = sy + int(math.sin(a1) * vr)
+                    x2 = sx + int(math.cos(a2) * vr)
+                    y2 = sy + int(math.sin(a2) * vr)
+                    pygame.draw.line(surf, (100, 200, 255), (x1, y1), (x2, y2), 1)
+
+       
+        if hasattr(self, '_regen_pulse'):
+            self._regen_pulse = getattr(self, '_regen_pulse', 0)
+        regen_ring = abs(math.sin(self.pulse * 0.7))
+        if regen_ring > 0.85:
+            rp_s = pygame.Surface((self.RADIUS * 4, self.RADIUS * 4), pygame.SRCALPHA)
+            pygame.draw.circle(rp_s, (80, 255, 140, 30),
+                               (self.RADIUS * 2, self.RADIUS * 2),
+                               int(self.RADIUS * 1.8))
+            surf.blit(rp_s, (sx - self.RADIUS * 2, sy - self.RADIUS * 2))
+

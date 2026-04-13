@@ -10,14 +10,12 @@ Survive escalating enemy waves, harvest rare crystals, and build powerful upgrad
 
 Play the Game : 
 ----------------------
-1) Linux (Recommended)
 
-Download the AppImage from Releases and run:
 
-chmod +x Aether_Harvest-x86_64.AppImage
-./Aether_Harvest-x86_64.AppImage
+( Currently the linux version is not working will update soon )
 
-2) Windows(works good no isses if any contact me ):
+
+1) Windows(works good no isses if any contact me ):
 
 Download the .exe from Releases and double-click to play:
 
@@ -26,7 +24,7 @@ AetherHarvest.exe
 when you run the exe windows firewall dooesnot allow directly iit first says not to run , if you click the + more info button it shows the option to run anyway (for the first time):
 
 
-No installation required.
+2) No installation required.
 
 Run from source (any OS)
 pip install pygame
